@@ -36,7 +36,6 @@ def block_to_block_type(md: str) -> BlockType:
             expected_num += 1
         else:
             break
-    print(expected_num)
     if expected_num - 1 == len(lines): # If each line was numbered in order
         return BlockType.ORDERED_LIST
     

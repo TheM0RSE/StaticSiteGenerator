@@ -49,7 +49,6 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
             current_text = old_node.text
             for match in matches:
                 split_text = current_text.split(f'[{match[0]}]({match[1]})', 1)
-                print(split_text)
                 if split_text[0] != "":
                     new_nodes.append(TextNode(split_text[0], TextType.TEXT))
                 new_nodes.append(TextNode(match[0], TextType.LINK, match[1]))

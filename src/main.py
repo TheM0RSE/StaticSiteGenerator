@@ -2,13 +2,17 @@ from extract_title import extract_title
 from markdown_html import markdown_to_html_node
 import shutil
 import os
+import sys
 
 def main():
-    delete_contents("public")
-    copy_contents("static", "public")
-    generate_pages_recursive("content", "template.html", "public")
+    basepath = "/"
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+    delete_contents("docs")
+    copy_contents("static", "docs")
+    generate_pages_recursive("content", "template.html", "docs", basepath)
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, base_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
     markdown = ""
@@ -25,22 +29,24 @@ def generate_page(from_path, template_path, dest_path):
 
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", content)
+    template = template.replace('href="/', f'href="{base_path}')
+    template = template.replace('src="/', f'src="{base_path}')
 
     print(markdown + "\n---------------\n" + template)
 
     with open(dest_path, "w", encoding="utf-8") as file:
         file.write(template)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, base_path):
     content = os.listdir(dir_path_content)
     for item in content:
         item_path = os.path.join(dir_path_content, item)
         if os.path.isfile(item_path) and item.endswith(".md"):
-            generate_page(item_path, template_path, os.path.join(dest_dir_path, item.rstrip(".md")+".html"))
+            generate_page(item_path, template_path, os.path.join(dest_dir_path, item.rstrip(".md")+".html"), base_path)
         elif os.path.isdir(item_path):
             new_dir_path = os.path.join(dest_dir_path, item)
             os.mkdir(new_dir_path)
-            generate_pages_recursive(item_path, template_path, new_dir_path)
+            generate_pages_recursive(item_path, template_path, new_dir_path, base_path)
 
 def delete_contents(path: str):
     if os.path.isdir(path):

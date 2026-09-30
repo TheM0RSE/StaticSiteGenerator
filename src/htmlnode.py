@@ -20,7 +20,8 @@ class LeafNode(HTMLNode):
     def __init__(self, tag: str, value: str, props: dict | None = None):
         super().__init__(tag, value, None, props)
     def to_html(self):
-        if not self.value:
+        if not self.value and self.tag != "img":
+            print(self)
             raise ValueError("LeafNode is missing value")
         if not self.tag:
             return self.value
